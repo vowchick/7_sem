@@ -92,12 +92,12 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
                   - tau * mu / (h * h);
               middle[m] = (H_s_) / 2. +
                   tau * fabs (curr_V[m]) * (H_s_) / (2. * h)
-                  + 2 * mu * tau / (h * h);
+                  + 2. * mu * tau / (h * h);
               top[m] = tau * (curr_V[m] - fabs (curr_V[m])) * (H_s_) / (4. * h)
                   - tau * mu / (h * h);
               next_V[m] = curr_V[m] * (H_s_) / 2.
-                  - tau * gamma * (std::pow (curr_H[m], gamma - 1) - std::pow (curr_H[m - 1], gamma - 1)) * H_s_
-                  / (2 * (gamma - 1) * h) + tau * f (t, x_v, mu, gamma) * (H_s_) / 2.;
+                  - tau * gamma * (std::pow (curr_H[m], gamma - 1.) - std::pow (curr_H[m - 1], gamma - 1.)) * H_s_
+                  / (2. * (gamma - 1.) * h) + tau * f (t, x_v, mu, gamma) * (H_s_) / 2.;
             }
         }
       next_V[M] = 0.;
@@ -130,11 +130,11 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
   for (int n = 0; n < N; n++)
     {
       [[maybe_unused]]double t = n * tau, t2 = (n + 1) * tau;
-      solve_for_v (t);
-//      for (int i = 0; i <= M; i++)
-//        {
-//          next_V[i] = u (t2, i * h);
-//        }
+//      solve_for_v (t);
+      for (int i = 0; i <= M; i++)
+        {
+          next_V[i] = u (t2, i * h);
+        }
      solve_for_h (t);
 //      for (int i = 0; i < M; i++)
 //        {
