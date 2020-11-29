@@ -5,14 +5,12 @@ struct P_gas
 {
     double Segm_T;
     double Segm_X;
-    double p_ro;
     double p_gamma;
     double mu;
-    void fill (double _T, double _X, double _ro, double _gamma, double _mu)
+    void fill (double _T, double _X, double _gamma, double _mu)
     {
       Segm_T = _T;
       Segm_X = _X;
-      p_ro = _ro;
       p_gamma = _gamma;
       mu = _mu;
     }

@@ -130,12 +130,12 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
   for (int n = 0; n < N; n++)
     {
       [[maybe_unused]]double t = n * tau, t2 = (n + 1) * tau;
-//      solve_for_v (t);
-      for (int i = 0; i <= M; i++)
-        {
-          next_V[i] = u (t2, i * h);
-        }
-     solve_for_h (t);
+      solve_for_v (t);
+//      for (int i = 0; i <= M; i++)
+//        {
+//          next_V[i] = u (t2, i * h);
+//        }
+      solve_for_h (t);
 //      for (int i = 0; i < M; i++)
 //        {
 //          next_H[i] = rho (t2, h / 2. + i * h);

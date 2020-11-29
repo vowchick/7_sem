@@ -3,12 +3,14 @@
 #include "header.h"
 #include <iostream>
 #include <cmath>
+#include <fstream>
+#include <iomanip>
 int main(int argc, char *argv[])
 {
-  if (argc != 7)
+  if (argc != 8)
     {
       printf ("Usage: %s Segm_T Segm_X p_gamma mu "
-              "M_x N\n", argv[0]);
+              "M_x N a.txt\n", argv[0]);
       return 0;
     }
   P_gas p_g;
@@ -20,7 +22,7 @@ int main(int argc, char *argv[])
 
   std::vector<double> curr_V (p_s.M_x + 1), curr_H (p_s.M_x);
   Sxema (p_g, p_s, curr_V, curr_H);
-  double t = p_s.N * p_s.tau;
+  double t = p_g.Segm_T;
   double residual_v = 0.;
   double residual_h = 0.;
 
@@ -42,8 +44,8 @@ int main(int argc, char *argv[])
       residual_v = std::max (residual_v, val_v);
       residual_h = std::max (residual_h, val_h);
 
-      v_residuals.push_back (residual_v);
-      h_residuals.push_back (residual_h);
+      v_residuals.push_back (val_v);
+      h_residuals.push_back (val_h);
     }
 
   double x_v = p_s.M_x * p_s.h_x;
@@ -62,10 +64,15 @@ int main(int argc, char *argv[])
     {
       residual_h = NAN;
     }
-//  residual_h = L2_norm (h_residuals, p_s.h_x, 1);
-//  residual_v = L2_norm (v_residuals, p_s.h_x, 0);
-  printf ("Residual_V = %e    |    Residual_h = %e    |    h = %e    |    tau = %e "
-          "   |    n = %d    |    m = %d\n",
-          residual_v, residual_h, p_s.h_x, p_s.tau, p_s.N, p_s.M_x);
+  residual_h = L2_norm (h_residuals, p_s.h_x, 1);
+  residual_v = L2_norm (v_residuals, p_s.h_x, 0);
+  std::ofstream outfile;
+  outfile.open(argv[7], std::ios_base::app); // append instead of overwrite
+  outfile << std::scientific << "Residual_V = " << residual_v << "   |   "
+          << std::scientific << "Residual_h = " << residual_h << "   |   "
+          << std::scientific << "h = " << p_s.h_x << "   |   "
+          << std::scientific << "tau = " << p_s.tau << "   |   "
+          << std::scientific << "n = " << p_s.N << "   |   "
+          << std::scientific << "m = " << p_s.M_x << std::endl;
   return 0;
 }

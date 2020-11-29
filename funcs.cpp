@@ -19,7 +19,7 @@ double rho (double t, double x)
 
 double ddx_rho_u (double t, double x)
 {
-  return ddx_u (t, x) + ddx_rho (t, x);
+  return ddx_u (t, x) * rho (t, x) + ddx_rho (t, x) * u (t, x);
 }
 
 double ddt_u (double t, double x)
@@ -32,7 +32,7 @@ double ddx_u (double t, double x)
 }
 double ddx_rho (double t, double x)
 {
-  return -M_PI * sin (M_PI  * x / 10.) * exp (t) / 10.;
+  return -M_PI * exp (t) * sin (M_PI  * x / 10.) / 10.;
 }
 double d_2dx_2_u (double t, double x)
 {

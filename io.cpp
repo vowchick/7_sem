@@ -3,16 +3,15 @@
 #define PRINT(x) std::cout << #x << " = " << x << "\n";
 void read_params (P_gas &p_g, P_she &p_s, char *argv[])
 {
-  p_g.fill (atof (argv[1]), atof (argv[2]), 0, atof (argv[3]),
+  p_g.fill (atof (argv[1]), atof (argv[2]), atof (argv[3]),
             atof (argv[4]));
   p_s.fill (atoi (argv[5]), atoi (argv[6]), p_g);
 }
 
 void P_gas::print_params ()
 {
-  PRINT (Segm_X)
   PRINT (Segm_T)
-  PRINT (p_ro)
+  PRINT (Segm_X)
   PRINT (p_gamma)
   PRINT (mu)
 }
