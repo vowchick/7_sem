@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.11.2, 2020-11-27T09:41:14. -->
+<!-- Written by QtCreator 4.11.2, 2020-11-29T19:39:10. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -284,7 +284,7 @@
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/vladimir.soshnikov/Documents/7sem-main/first_task.pro</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/vladimir.soshnikov/Documents/7sem-main/first_task.pro</value>
-    <value type="QString" key="RunConfiguration.Arguments">1 10 1.4 0.01 1000 10000</value>
+    <value type="QString" key="RunConfiguration.Arguments">1 10 1.4 0.01 10000 1000 aaa.txt</value>
     <value type="bool" key="RunConfiguration.Arguments.multi">false</value>
     <value type="QString" key="RunConfiguration.OverrideDebuggerStartup"></value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>

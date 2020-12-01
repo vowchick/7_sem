@@ -64,15 +64,8 @@ int main(int argc, char *argv[])
     {
       residual_h = NAN;
     }
-  residual_h = L2_norm (h_residuals, p_s.h_x, 1);
-  residual_v = L2_norm (v_residuals, p_s.h_x, 0);
-  std::ofstream outfile;
-  outfile.open(argv[7], std::ios_base::app); // append instead of overwrite
-  outfile << std::scientific << "Residual_V = " << residual_v << "   |   "
-          << std::scientific << "Residual_h = " << residual_h << "   |   "
-          << std::scientific << "h = " << p_s.h_x << "   |   "
-          << std::scientific << "tau = " << p_s.tau << "   |   "
-          << std::scientific << "n = " << p_s.N << "   |   "
-          << std::scientific << "m = " << p_s.M_x << std::endl;
+//  residual_h = L2_norm (h_residuals, p_s.h_x, 1);
+//  residual_v = L2_norm (v_residuals, p_s.h_x, 0);
+  write_table_for_tex (argv[7], residual_h, p_s);
   return 0;
 }

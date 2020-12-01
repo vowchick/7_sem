@@ -1,2 +1,2 @@
 sh file.sh 2>/dev/null | tee >(grep residual_V)
-
+./parallel_commands.sh  "sh file.sh 0.1 a01.txt" "sh file.sh 0.01  a001.txt" "sh file.sh 0.001 a0001.txt"
