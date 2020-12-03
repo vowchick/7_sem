@@ -157,3 +157,15 @@ double L2_norm (const std::vector<double> &v, double h, int st)
   scal += (v[size - 1] * v[size - 1] / 2.);
   return sqrt (h * scal);
 }
+double W2_1h_norm (const std::vector<double> &v, double h, int st)
+{
+  double first = L2_norm (v, h, st);
+  double second = 0.;
+  int size = static_cast<int> (v.size ());
+  for (int i = 1; i < size; i++)
+    {
+      second += (v[i] - v[i - 1]) * (v[i] - v[i - 1]);
+    }
+  second /= h;
+  return sqrt (first * first + second);
+}

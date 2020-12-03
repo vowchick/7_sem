@@ -66,6 +66,8 @@ int main(int argc, char *argv[])
     }
 //  residual_h = L2_norm (h_residuals, p_s.h_x, 1);
 //  residual_v = L2_norm (v_residuals, p_s.h_x, 0);
-  write_table_for_tex (argv[7], residual_h, p_s);
+    residual_h = W2_1h_norm (h_residuals, p_s.h_x, 1);
+    residual_v = W2_1h_norm (v_residuals, p_s.h_x, 0);
+  write_table_for_tex (argv[7], residual_v, p_s);
   return 0;
 }

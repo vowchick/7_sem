@@ -55,9 +55,10 @@ void write_table_for_tex (const char *name, double residual, const P_she &p_s)
 
   if (p_s.M_x == 100000 && p_s.N == 10000)
     {
-      outfile << "\\end{tabular}\n  "
-                    "$ \\text { Таблица 1: Ошибка решения для } H \\text { при } \\mu=10^{-3}$\n    "
-                  "\\end{center}" << std::endl;
+      outfile << "  \\end{tabular}\n  "
+                    "$ \\text { Таблица 1: Ошибка решения для } H \\text { при } \\mu=10^{-3}$\n"
+                  "\\end{center}\n"
+                  "\\vfill" << std::endl;
     }
 }
 
