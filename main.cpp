@@ -21,53 +21,8 @@ int main(int argc, char *argv[])
 //  check ();
 
   std::vector<double> curr_V (p_s.M_x + 1), curr_H (p_s.M_x);
-  Sxema (p_g, p_s, curr_V, curr_H);
-  double t = p_g.Segm_T;
-  double residual_v = 0.;
-  double residual_h = 0.;
+  double res = Sxema (p_g, p_s, curr_V, curr_H);
+  std::cout << res << "\n";
 
-  std::vector<double> v_residuals, h_residuals;
-
-  for (int m = 0; m < p_s.M_x; m++)
-    {
-      double x_v = m * p_s.h_x,
-             x_u = p_s.h_x / 2. + x_v;
-
-      double app_v = curr_V[m];
-      double ori_v = u (t, x_v);
-      double val_v = fabs (app_v - ori_v);
-
-      double app_h = curr_H[m];
-      double ori_h = rho (t, x_u);
-      double val_h = fabs (app_h - ori_h);
-
-      residual_v = std::max (residual_v, val_v);
-      residual_h = std::max (residual_h, val_h);
-
-      v_residuals.push_back (val_v);
-      h_residuals.push_back (val_h);
-    }
-
-  double x_v = p_s.M_x * p_s.h_x;
-  double app_v = curr_V[p_s.M_x];
-  double ori_v = u (t, x_v);
-  double val_v = fabs (app_v - ori_v);
-
-  residual_v = std::max (residual_v, val_v);
-
-  if (residual_v <= 0.)
-    {
-      residual_v = NAN;
-    }
-
-  if (residual_h <= 0.)
-    {
-      residual_h = NAN;
-    }
-//  residual_h = L2_norm (h_residuals, p_s.h_x, 1);
-//  residual_v = L2_norm (v_residuals, p_s.h_x, 0);
-    residual_h = W2_1h_norm (h_residuals, p_s.h_x, 1);
-    residual_v = W2_1h_norm (v_residuals, p_s.h_x, 0);
-  write_table_for_tex (argv[7], residual_v, p_s);
   return 0;
 }

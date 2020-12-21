@@ -8,6 +8,16 @@
 //                 M_PI / 50.  = M_PI / 50.,
 //                 M_PI / 100. = M_PI / 100.;
 
+double rho_0 (double x)
+{
+  if (x < 4.5 && x > 5.5)
+    return 1.;
+  return 2.;
+}
+double u_0 ([[maybe_unused]]double x)
+{
+  return 0.;
+}
 double u (double t, double x)
 {
   return cos (2. * M_PI * t) * sin (M_PI * x * x / 100.);

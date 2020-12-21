@@ -10,10 +10,10 @@ init_vectors ([[maybe_unused]]const P_gas &p_g, const P_she &p_s, std::vector<do
     {
       x_v = i * h;
       x_h = h / 2. + i * h;
-      curr_V[i] = u (0, x_v);
-      curr_H[i] = rho (0, x_h);
+      curr_V[i] = u_0 (x_v);
+      curr_H[i] = rho_0 (x_h);
     }
-  curr_V[M] = u (0, M * h);
+  curr_V[M] = u_0 (M * h);
 }
 void
 solve_tridiagonal (std::vector<double> &bottom, std::vector<double> &middle, std::vector<double> &top, std::vector<double> &rhs, int n)
@@ -59,16 +59,17 @@ solve_tridiagonal (std::vector<double> &bottom, std::vector<double> &middle, std
       rhs[i] -= top[i] * rhs[i + 1];
     }
 }
-void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std::vector<double> &curr_H)
+double Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std::vector<double> &curr_H)
 {
   int M = p_s.M_x, N = p_s.N;
+  const double eps = 1e-3;
   double tau = p_s.tau, h = p_s.h_x,
       mu = p_g.mu, gamma = p_g.p_gamma;
   std::vector<double> next_V (M + 1), next_H (M),
       bottom (M + 1), middle (M + 1), top (M + 1);
   init_vectors (p_g, p_s, curr_V, curr_H);
   [[maybe_unused]]auto solve_for_v = [M, h, mu, tau, gamma, &top, &bottom, &middle,
-                     &curr_H, &curr_V, &next_V] (double t)
+                     &curr_H, &curr_V, &next_V] ()
   {
       next_V[0] = 0.;
       middle[0] = 1.;
@@ -76,7 +77,6 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
 
       for (int m = 1; m < M; m++)
         {
-          double x_v = m * h;
           double H_s_ = curr_H[m] + curr_H[m - 1];
           if ((H_s_ <= 0) &&(H_s_ >= 0))
             {
@@ -97,7 +97,7 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
                   - tau * mu / (h * h);
               next_V[m] = curr_V[m] * (H_s_) / 2.
                   - tau * gamma * (std::pow (curr_H[m], gamma - 1.) - std::pow (curr_H[m - 1], gamma - 1.)) * H_s_
-                  / (2. * (gamma - 1.) * h) + tau * f (t, x_v, mu, gamma) * (H_s_) / 2.;
+                  / (2. * (gamma - 1.) * h) /*+ tau * f (t, x_v, mu, gamma) * (H_s_) / 2.*/;
             }
         }
       next_V[M] = 0.;
@@ -114,37 +114,41 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
     };
 
   [[maybe_unused]]auto solve_for_h = [M, h, tau, &top, &bottom, &middle,
-                     &curr_H, &next_H, &next_V] (double t)
+                     &curr_H, &next_H, &next_V] ()
   {
     for (int m = 0; m < M; m++)
       {
-        double x_h = h / 2. + m * h;
         bottom[m] = -tau * (next_V[m] + fabs (next_V[m])) / (2. * h);
         middle[m] = 1. + tau * (next_V[m + 1] + fabs (next_V[m + 1])
                                 - next_V[m] + fabs (next_V[m])) / (2. * h);
         top[m] = tau * (next_V[m + 1] - fabs (next_V[m + 1])) / (2. * h);
-        next_H[m] = curr_H[m] + tau * f0 (t, x_h);
+        next_H[m] = curr_H[m]/* + tau * f0 (t, x_h)*/;
       }
     solve_tridiagonal (bottom, middle, top, next_H, M);
     };
   for (int n = 0; n < N; n++)
     {
       [[maybe_unused]]double t = n * tau, t2 = (n + 1) * tau;
-      solve_for_v (t);
+      solve_for_v ();
 //      for (int i = 0; i <= M; i++)
 //        {
 //          next_V[i] = u (t2, i * h);
 //        }
-      solve_for_h (t);
+      solve_for_h ();
 //      for (int i = 0; i < M; i++)
 //        {
 //          next_H[i] = rho (t2, h / 2. + i * h);
 //        }
 
+      [[maybe_unused]]auto x = norm_for_second_task (next_V) - eps;
+//      if (x < eps)
+//        return x;
+
       std::swap (curr_V, next_V);
       std::swap (curr_H, next_H);
-    }
 
+    }
+  return 0.;
 }
 double L2_norm (const std::vector<double> &v, double h, int st)
 {
@@ -168,4 +172,14 @@ double W2_1h_norm (const std::vector<double> &v, double h, int st)
     }
   second /= h;
   return sqrt (first * first + second);
+}
+double norm_for_second_task (const std::vector <double> &v)
+{
+  double max = fabs (v[0]);
+  for (const auto &x : v)
+    {
+      if (fabs (x) > max)
+        max = fabs (x);
+    }
+  return max;
 }
