@@ -65,6 +65,19 @@ double f (double t, double x, double mu, double gamma)
      -mu * d_2dx_2_u (t, x)) / rho (t, x);
 }
 
+double m (double h, const std::vector<double> &H)
+{
+  double sum = 0.;
+  for (const auto &el : H)
+    {
+      sum += el;
+    }
+  return h * sum;
+}
+double dm (double m, double m0)
+{
+  return (m - m0) / m0;;
+}
 bool is_equal (double x, double y)
 {
   return fabs (x - y) < 1e-14;

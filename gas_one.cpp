@@ -59,7 +59,7 @@ solve_tridiagonal (std::vector<double> &bottom, std::vector<double> &middle, std
       rhs[i] -= top[i] * rhs[i + 1];
     }
 }
-void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std::vector<double> &curr_H, res &result, int bound, bool no_bound)
+void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std::vector<double> &curr_H, res &result, int bound, bool first)
 {
   int M = p_s.M_x;
   const double eps = 1e-3;
@@ -68,6 +68,7 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
   std::vector<double> next_V (M + 1), next_H (M),
       bottom (M + 1), middle (M + 1), top (M + 1);
   init_vectors (p_g, p_s, curr_V, curr_H);
+  double mm = m (h, curr_H);
   [[maybe_unused]]auto solve_for_v = [M, h, mu, tau, gamma, &top, &bottom, &middle,
                      &curr_H, &curr_V, &next_V] ()
   {
@@ -126,8 +127,8 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
       }
     solve_tridiagonal (bottom, middle, top, next_H, M);
     };
-  int i;
-  for (i = 0; (i < bound || no_bound) ; i++)
+  int i, j = 1, bound2 = bound / 5;
+  for (i = 0; (i <= bound || first) ; i++)
     {
       solve_for_v ();
 //      for (int i = 0; i <= M; i++)
@@ -141,20 +142,24 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
 //        }
 
       [[maybe_unused]]auto x = norm_for_second_task (next_V);
-      if (x < eps)
+      if (x < eps && first)
         {
           result.num = i;
-          result.resids.push_back (x);
           return;
         }
-
+      if (i == bound2 && !first)
+        {
+          auto y = m (h, next_H);
+          auto z = dm (mm, y);
+          result.resids.push_back (z);
+          j++;
+          bound2 = j * bound / 5;
+          if (j == 5)
+            bound2 = bound;
+        }
 
       std::swap (curr_V, next_V);
       std::swap (curr_H, next_H);
-    }
-  if (i == bound)
-    {
-      result.resids.push_back (norm_for_second_task (next_V));
     }
 }
 double L2_norm (const std::vector<double> &v, double h, int st)

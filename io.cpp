@@ -40,7 +40,7 @@ void write_table_for_tex (const char *name, const res &result, const P_she &p_s)
 {
   std::ofstream outfile;
   outfile.open(name, std::ios_base::app);
-  if (p_s.M_x == 1000 && p_s.N == 500)
+  if (p_s.M_x == 1000 && p_s.N == 5000)
     {
       outfile << "\\begin{center}\n"
       << "  \\begin{tabular}{| l | l | l | l | l | }\n"
@@ -54,7 +54,7 @@ void write_table_for_tex (const char *name, const res &result, const P_she &p_s)
    }
  outfile << " \\\\ \\hline\n";
 
-  if (p_s.M_x == 2000 && p_s.N == 1000)
+  if (p_s.M_x == 2000 && p_s.N == 10000)
     {
       outfile << "  \\end{tabular}\n  "
                     "$ \\text {Нормы скорости при } \\mu=10^{-1}$\n"
@@ -66,6 +66,7 @@ void write_table_for_tex (const char *name, const res &result, const P_she &p_s)
 std::ostream & operator << (std::ostream &s, const res &Res)
 {
   s << Res.num << " " << Res.time_st << " "
+    << Res.resids[4] << " "
     << Res.resids[3] << " "
     << Res.resids[2] << " "
     << Res.resids[1] << " "

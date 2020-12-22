@@ -25,9 +25,8 @@ int main(int argc, char *argv[])
   std::cout << p_s.M_x << " " << p_s.N << ": ";
   res result;
   Sxema (p_g, p_s, curr_V, curr_H, result, 0, true);
-  Sxema (p_g, p_s, curr_V, curr_H, result, (3 * result.num) / 4, false);
-  Sxema (p_g, p_s, curr_V, curr_H, result, result.num / 2, false);
-  Sxema (p_g, p_s, curr_V, curr_H, result, result.num / 4, false);
+  Sxema (p_g, p_s, curr_V, curr_H, result, result.num, false);
+
   result.set_time_st (p_s.tau);
   write_table_for_tex (argv[5], result, p_s);
   std::cout << result;
