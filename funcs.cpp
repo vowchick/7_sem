@@ -10,7 +10,7 @@
 
 double rho_0 (double x)
 {
-  if (x < 4.5 && x > 5.5)
+  if (x > 4.5 && x < 5.5)
     return 1.;
   return 2.;
 }

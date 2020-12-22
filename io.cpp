@@ -2,12 +2,13 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+
 #define PRINT(x) std::cout << #x << " = " << x << "\n";
 void read_params (P_gas &p_g, P_she &p_s, char *argv[])
 {
-  p_g.fill (atof (argv[1]), atof (argv[2]), atof (argv[3]),
-            atof (argv[4]));
-  p_s.fill (atoi (argv[5]), atoi (argv[6]), p_g);
+  p_g.fill (atof (argv[1]),
+            atof (argv[2]));
+  p_s.fill (atoi (argv[3]), atoi (argv[4]), p_g);
 }
 
 void P_gas::print_params ()
@@ -35,33 +36,43 @@ void write_table (const char *name, double residual, const P_she &p_s)
           << std::scientific << "n = " << p_s.N << "   |   "
           << std::scientific << "m = " << p_s.M_x << std::endl;
 }
-void write_table_for_tex (const char *name, double residual, const P_she &p_s)
+void write_table_for_tex (const char *name, const res &result, const P_she &p_s)
 {
   std::ofstream outfile;
   outfile.open(name, std::ios_base::app);
-  if (p_s.M_x == 100 && p_s.N == 10)
+  if (p_s.M_x == 1000 && p_s.N == 500)
     {
-      outfile << "\\begin{center}\n  "
-                 "\\begin{tabular}{ | l | l | l | l | l |}\n    "
-                 "\\hline \n      "
-                 "\\backslashbox{$\\tau$}{$h$} & 0.1 & 0.01 &0.001 & 0.0001 \\\\ \\hline" << std::endl;
+      outfile << "\\begin{center}\n"
+      << "  \\begin{tabular}{| l | l | l | l | l | }\n"
+      << "    \\hline\n"
+      << "        $\\tau \\times h$ & $N_{0} / 4$ & $N_{0} / 2$ & $3N_{0} / 4$ & $N_{0}$  \\\\ \\hline\n";
     }
-  if (p_s.M_x == 100)
-    outfile << 1. / p_s.N << " & ";
-  if (p_s.M_x != 100000)
-    outfile << std::scientific << residual << " & ";
-  else
-    outfile << std::scientific << residual << " \\\\ \\hline" << std::endl;
+  outfile << "$" << p_s.tau << " \\times " << p_s.h_x << "$ ";
+ for (int i = 3; i >= 0; i--)
+   {
+     outfile << "& " << std::scientific << result.resids[i] << " ";
+   }
+ outfile << " \\\\ \\hline\n";
 
-  if (p_s.M_x == 100000 && p_s.N == 10000)
+  if (p_s.M_x == 2000 && p_s.N == 1000)
     {
       outfile << "  \\end{tabular}\n  "
-                    "$ \\text { Таблица 1: Ошибка решения для } H \\text { при } \\mu=10^{-3}$\n"
+                    "$ \\text {Нормы скорости при } \\mu=10^{-1}$\n"
                   "\\end{center}\n"
                   "\\vfill" << std::endl;
     }
 }
 
+std::ostream & operator << (std::ostream &s, const res &Res)
+{
+  s << Res.num << " " << Res.time_st << " "
+    << Res.resids[3] << " "
+    << Res.resids[2] << " "
+    << Res.resids[1] << " "
+    << Res.resids[0]
+    << "\n";
+  return s;
+}
 //\begin{center}
 //  \begin{tabular}{ | l | l | l | l | l |}
 //    \hline

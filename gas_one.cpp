@@ -59,9 +59,9 @@ solve_tridiagonal (std::vector<double> &bottom, std::vector<double> &middle, std
       rhs[i] -= top[i] * rhs[i + 1];
     }
 }
-double Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std::vector<double> &curr_H)
+void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std::vector<double> &curr_H, res &result, int bound, bool no_bound)
 {
-  int M = p_s.M_x, N = p_s.N;
+  int M = p_s.M_x;
   const double eps = 1e-3;
   double tau = p_s.tau, h = p_s.h_x,
       mu = p_g.mu, gamma = p_g.p_gamma;
@@ -126,9 +126,9 @@ double Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, s
       }
     solve_tridiagonal (bottom, middle, top, next_H, M);
     };
-  for (int n = 0; n < N; n++)
+  int i;
+  for (i = 0; (i < bound || no_bound) ; i++)
     {
-      [[maybe_unused]]double t = n * tau, t2 = (n + 1) * tau;
       solve_for_v ();
 //      for (int i = 0; i <= M; i++)
 //        {
@@ -140,15 +140,22 @@ double Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, s
 //          next_H[i] = rho (t2, h / 2. + i * h);
 //        }
 
-      [[maybe_unused]]auto x = norm_for_second_task (next_V) - eps;
-//      if (x < eps)
-//        return x;
+      [[maybe_unused]]auto x = norm_for_second_task (next_V);
+      if (x < eps)
+        {
+          result.num = i;
+          result.resids.push_back (x);
+          return;
+        }
+
 
       std::swap (curr_V, next_V);
       std::swap (curr_H, next_H);
-
     }
-  return 0.;
+  if (i == bound)
+    {
+      result.resids.push_back (norm_for_second_task (next_V));
+    }
 }
 double L2_norm (const std::vector<double> &v, double h, int st)
 {

@@ -1,16 +1,13 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
-
 struct P_gas
 {
-    double Segm_T;
-    double Segm_X;
+    double Segm_T = 1.;
+    double Segm_X = 10.;
     double p_gamma;
     double mu;
-    void fill (double _T, double _X, double _gamma, double _mu)
+    void fill (double _gamma, double _mu)
     {
-      Segm_T = _T;
-      Segm_X = _X;
       p_gamma = _gamma;
       mu = _mu;
     }
@@ -34,6 +31,17 @@ struct P_she
       tau = p_g.Segm_T / N;
     }
     void print_params ();
+};
+
+struct res
+{
+  int num;
+  std::vector<double> resids;
+  double time_st;
+  void set_time_st (double tau)
+  {
+    time_st = tau * num;
+  }
 };
 
 #endif // STRUCTS_H
