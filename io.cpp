@@ -50,7 +50,7 @@ void write_table_for_tex (const char *name, const res &result, const P_she &p_s)
   outfile << "$" << p_s.tau << " \\times " << p_s.h_x << "$ ";
  for (int i = 3; i >= 0; i--)
    {
-     outfile << "& " << std::scientific << result.resids[i] << " ";
+     outfile << "& " << std::scientific << result.resids[i].first << " ";
    }
  outfile << " \\\\ \\hline\n";
 
@@ -66,13 +66,20 @@ void write_table_for_tex (const char *name, const res &result, const P_she &p_s)
 std::ostream & operator << (std::ostream &s, const res &Res)
 {
   s << Res.num << " " << Res.time_st << " "
-    << Res.resids[4] << " "
-    << Res.resids[3] << " "
-    << Res.resids[2] << " "
-    << Res.resids[1] << " "
-    << Res.resids[0]
     << "\n";
   return s;
+}
+void write_for_plot (const char *name, const res &result, const P_she &p_s)
+{
+  std::ofstream outfile;
+  outfile.open(name, std::ios_base::app);
+  outfile << "Tau = " << p_s.tau << "\n"
+          <<"h = "  << p_s.h_x << "\n";
+  for (const auto &r : result.resids)
+    {
+      outfile << r.first << " " << r.second << " ";
+    }
+  outfile << std::endl;
 }
 //\begin{center}
 //  \begin{tabular}{ | l | l | l | l | l |}

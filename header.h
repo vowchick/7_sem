@@ -2,6 +2,7 @@
 #define HEADER_H
 #include <functional>
 #include <vector>
+#include <utility>
 #include "structs.h"
 double u_0 (double x);
 double rho_0 (double x);
@@ -23,6 +24,7 @@ double L2_norm (const std::vector<double> &v, double h, int st);
 double W2_1h_norm (const std::vector<double> &v, double h, int st);
 void write_table (const char *name, double residual, const P_she &p_s);
 void write_table_for_tex (const char *name, const res &result, const P_she &p_s);
+void write_for_plot (const char *name, const res &result, const P_she &p_s);
 double m (double h, const std::vector<double> &H);
 double dm (double m, double m0);
 double norm_for_second_task (const std::vector <double> &v);

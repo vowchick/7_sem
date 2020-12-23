@@ -36,11 +36,12 @@ struct P_she
 struct res
 {
   int num;
-  std::vector<double> resids;
+  std::vector<std::pair<double, double>> resids;
   double time_st;
-  void set_time_st (double tau)
+  double tau;
+  void set_time_st (int number)
   {
-    time_st = tau * num;
+    time_st = tau * number;
   }
 };
 

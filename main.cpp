@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   Sxema (p_g, p_s, curr_V, curr_H, result, result.num, false);
 
   result.set_time_st (p_s.tau);
-  write_table_for_tex (argv[5], result, p_s);
+  write_for_plot (argv[5], result, p_s);
   std::cout << result;
 
   return 0;

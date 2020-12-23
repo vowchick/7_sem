@@ -127,7 +127,7 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
       }
     solve_tridiagonal (bottom, middle, top, next_H, M);
     };
-  int i, j = 1, bound2 = bound / 5;
+  int i, j = 1, bound2 = bound / 100;
   for (i = 0; (i <= bound || first) ; i++)
     {
       solve_for_v ();
@@ -151,10 +151,10 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
         {
           auto y = m (h, next_H);
           auto z = dm (mm, y);
-          result.resids.push_back (z);
+          result.resids.push_back (std::make_pair (z, i * tau));
           j++;
-          bound2 = j * bound / 5;
-          if (j == 5)
+          bound2 = j * bound / 100;
+          if (j == 100)
             bound2 = bound;
         }
 
