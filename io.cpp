@@ -43,12 +43,12 @@ void write_table_for_tex (const char *name, const res &result, const P_she &p_s)
   if (p_s.M_x == 1000 && p_s.N == 5000)
     {
       outfile << "\\begin{center}\n"
-      << "  \\begin{tabular}{| l | l | l | l | l | }\n"
+      << "  \\begin{tabular}{| l | l | l | l | l | l |} \n"
       << "    \\hline\n"
-      << "        $\\tau \\times h$ & $N_{0} / 4$ & $N_{0} / 2$ & $3N_{0} / 4$ & $N_{0}$  \\\\ \\hline\n";
+      << "        $\\tau \\times h$ & $N_{0} / 5$ & $2N_{0} / 5$ & $3N_{0} / 5$ & $4N_{0}/5$ & $N_{0}$  \\\\ \\hline\n";
     }
   outfile << "$" << p_s.tau << " \\times " << p_s.h_x << "$ ";
- for (int i = 3; i >= 0; i--)
+ for (int i = 0; i < 5; i++)
    {
      outfile << "& " << std::scientific << result.resids[i] << " ";
    }
@@ -57,7 +57,7 @@ void write_table_for_tex (const char *name, const res &result, const P_she &p_s)
   if (p_s.M_x == 2000 && p_s.N == 10000)
     {
       outfile << "  \\end{tabular}\n  "
-                    "$ \\text {Нормы скорости при } \\mu=10^{-1}$\n"
+                    "$ \\text {Разность масс  при } \\mu=10^{-1}$\n"
                   "\\end{center}\n"
                   "\\vfill" << std::endl;
     }
