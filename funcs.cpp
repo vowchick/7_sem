@@ -8,14 +8,14 @@
 //                 M_PI / 50.  = M_PI / 50.,
 //                 M_PI / 100. = M_PI / 100.;
 
-double rho_0 (double x)
+double rho_0 ([[maybe_unused]] double x)
+{
+  return 1.;
+}
+double u_0 (double x)
 {
   if (x > 4.5 && x < 5.5)
     return 1.;
-  return 2.;
-}
-double u_0 ([[maybe_unused]]double x)
-{
   return 0.;
 }
 double u (double t, double x)
