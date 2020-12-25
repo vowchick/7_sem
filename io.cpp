@@ -69,15 +69,25 @@ std::ostream & operator << (std::ostream &s, const res &Res)
     << "\n";
   return s;
 }
-void write_for_plot (const char *name, const res &result, const P_she &p_s)
+
+void write_tau (const char *name, const P_she &p_s, double mu)
 {
   std::ofstream outfile;
-  outfile.open(name, std::ios_base::app);
-  outfile << "Tau = " << p_s.tau << "\n"
-          <<"h = "  << p_s.h_x << "\n";
-  for (const auto &r : result.resids)
+  outfile.open(std::to_string (p_s.M_x) + "_" +std::to_string (p_s.N) + name + ".txt", std::ios_base::app);
+  outfile << p_s.tau << " " << p_s.h_x << " " << mu <<  "\n";
+}
+void write_for_plot (const char *name, const std::vector<double> &curr_H, const std::vector<double> &curr_V, [[maybe_unused]]int t, const P_she &p_s)
+{
+  std::ofstream outfile;
+  outfile.open(std::to_string (p_s.M_x) + "_" +std::to_string (p_s.N) + name + ".txt", std::ios_base::app);
+  for (const auto &r : curr_V)
     {
-      outfile << r.first << " " << r.second << " ";
+      outfile << r << " ";
+    }
+  outfile << "\n";
+  for (const auto &r : curr_H)
+    {
+      outfile << r << " ";
     }
   outfile << std::endl;
 }

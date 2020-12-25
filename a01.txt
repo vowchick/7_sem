@@ -1,5 +1,0 @@
-\begin{center}
-  \begin{tabular}{| l | l | l | l | l | }
-    \hline
-        $\tau \times h$ & $N_{0} / 4$ & $N_{0} / 2$ & $3N_{0} / 4$ & $N_{0}$  \\ \hline
-$0.0002 \times 0.01$ & 1.869849e-16 & 1.682864e-15 & 1.495879e-15 & -9.349247e-16  \\ \hline

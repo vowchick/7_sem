@@ -24,11 +24,10 @@ int main(int argc, char *argv[])
   std::vector<double> curr_V (p_s.M_x + 1), curr_H (p_s.M_x);
   std::cout << p_s.M_x << " " << p_s.N << ": ";
   res result;
-  Sxema (p_g, p_s, curr_V, curr_H, result, 0, true);
-  Sxema (p_g, p_s, curr_V, curr_H, result, result.num, false);
+//  Sxema (p_g, p_s, curr_V, curr_H, result, 0, true, argv[5]);
+  Sxema (p_g, p_s, curr_V, curr_H, result, result.num, false, argv[5]);
 
   result.set_time_st (p_s.tau);
-  write_for_plot (argv[5], result, p_s);
   std::cout << result;
 
   return 0;

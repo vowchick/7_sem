@@ -59,16 +59,16 @@ solve_tridiagonal (std::vector<double> &bottom, std::vector<double> &middle, std
       rhs[i] -= top[i] * rhs[i + 1];
     }
 }
-void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std::vector<double> &curr_H, res &result, int bound, bool first)
+void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std::vector<double> &curr_H, [[maybe_unused]]res &result, int bound, bool first, const char *name)
 {
   int M = p_s.M_x;
-  const double eps = 1e-3;
+//  const double eps = 1e-3;
   double tau = p_s.tau, h = p_s.h_x,
       mu = p_g.mu, gamma = p_g.p_gamma;
   std::vector<double> next_V (M + 1), next_H (M),
       bottom (M + 1), middle (M + 1), top (M + 1);
   init_vectors (p_g, p_s, curr_V, curr_H);
-  double mm = m (h, curr_H);
+  write_tau (name, p_s, mu);
   [[maybe_unused]]auto solve_for_v = [M, h, mu, tau, gamma, &top, &bottom, &middle,
                      &curr_H, &curr_V, &next_V] ()
   {
@@ -127,7 +127,7 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
       }
     solve_tridiagonal (bottom, middle, top, next_H, M);
     };
-  int i, j = 1, bound2 = bound / 100;
+  int i;
   for (i = 0; (i <= bound || first) ; i++)
     {
       solve_for_v ();
@@ -142,21 +142,19 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
 //        }
 
       [[maybe_unused]]auto x = norm_for_second_task (next_V);
-      if (x < eps && first)
+//      if (x < eps && first)
+//        {
+//          result.num = i;
+//          write_tau (name, p_s);
+//          return;
+//        }
+      if ((i % 100 == 0) && (static_cast<int> (i * tau) >= 20) && (static_cast<int> (i * tau) <= 50) && !first)
         {
-          result.num = i;
-          return;
+          write_for_plot (name, curr_V, curr_H, static_cast<int> (i * tau), p_s);
         }
-      if (i == bound2 && !first)
-        {
-          auto y = m (h, next_H);
-          auto z = dm (mm, y);
-          result.resids.push_back (std::make_pair (z, i * tau));
-          j++;
-          bound2 = j * bound / 100;
-          if (j == 100)
-            bound2 = bound;
-        }
+      else if (static_cast<int> (i * tau) > 50)
+        return;
+
 
       std::swap (curr_V, next_V);
       std::swap (curr_H, next_H);
