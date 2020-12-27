@@ -5,15 +5,14 @@ init_vectors ([[maybe_unused]]const P_gas &p_g, const P_she &p_s, std::vector<do
 {
   int M = p_s.M_x;
   double h = p_s.h_x;
-  double x_v = 0., x_h = h / 2.;
+  double x_v = 0.;
   for (int i = 0; i < M; i++)
     {
       x_v = i * h;
-      x_h = h / 2. + i * h;
-      curr_V[i] = u_0 (x_v);
-      curr_H[i] = rho_0 (x_h);
+      curr_V[i] = u_0 (x_v, p_s.K);
+      curr_H[i] = rho_0 ();
     }
-  curr_V[M] = u_0 (M * h);
+  curr_V[M] = u_0 (M * h, p_s.K);
 }
 void
 solve_tridiagonal (std::vector<double> &bottom, std::vector<double> &middle, std::vector<double> &top, std::vector<double> &rhs, int n)
@@ -62,7 +61,7 @@ solve_tridiagonal (std::vector<double> &bottom, std::vector<double> &middle, std
 void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std::vector<double> &curr_H, res &result, int bound, bool no_bound)
 {
   int M = p_s.M_x;
-  const double eps = 1e-3;
+  const double eps = 1e-5;
   double tau = p_s.tau, h = p_s.h_x,
       mu = p_g.mu, gamma = p_g.p_gamma;
   std::vector<double> next_V (M + 1), next_H (M),

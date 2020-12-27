@@ -2,13 +2,14 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <cmath>
 
 #define PRINT(x) std::cout << #x << " = " << x << "\n";
 void read_params (P_gas &p_g, P_she &p_s, char *argv[])
 {
   p_g.fill (atof (argv[1]),
             atof (argv[2]));
-  p_s.fill (atoi (argv[3]), atoi (argv[4]), p_g);
+  p_s.fill (atoi (argv[3]), atoi (argv[4]), atoi (argv[5]), p_g);
 }
 
 void P_gas::print_params ()
@@ -36,33 +37,37 @@ void write_table (const char *name, double residual, const P_she &p_s)
           << std::scientific << "n = " << p_s.N << "   |   "
           << std::scientific << "m = " << p_s.M_x << std::endl;
 }
-void write_table_for_tex (const char *name, const res &result, const P_she &p_s)
+void write_table_for_tex (const char *name, const res &result, const P_she &p_s, const P_gas &p_g)
 {
   std::ofstream outfile;
   outfile.open(name, std::ios_base::app);
-  if (p_s.M_x == 1000 && p_s.N == 5000)
+  if (p_s.K == 1 && fabs (p_g.mu - 0.1) < 1e-16)
     {
       outfile << "\\begin{center}\n"
-      << "  \\begin{tabular}{| l | l | l | l | l | }\n"
+      << "  \\begin{tabular}{| l | l | l | l |}\n"
       << "    \\hline\n"
-      << "        $\\tau \\times h$ & $N_{0} / 4$ & $N_{0} / 2$ & $3N_{0} / 4$ & $N_{0}$  \\\\ \\hline\n";
+      << "      \\backslashbox{$K$}{$\\mu$} & 0.1 & 0.01 & 0.001 \\\\ \\hline \n";
     }
-  outfile << "$" << p_s.tau << " \\times " << p_s.h_x << "$ ";
- for (int i = 3; i >= 0; i--)
-   {
-     outfile << "& " << std::scientific << result.resids[i] << " ";
-   }
- outfile << " \\\\ \\hline\n";
-
-  if (p_s.M_x == 2000 && p_s.N == 10000)
+  if (fabs (p_g.mu - 0.1) < 1e-16)
     {
-      outfile << "  \\end{tabular}\n  "
-                    "$ \\text {Нормы скорости при } \\mu=10^{-1}$\n"
-                  "\\end{center}\n"
-                  "\\vfill" << std::endl;
+      outfile << p_s.K;
     }
-}
+  outfile << " & " << result.num * p_s.tau;
+  if (fabs (p_g.mu - 0.001) < 1e-16)
+    {
+      outfile << " \\\\ \\hline\n";
+      if (p_s.K == 10)
+        {
+          outfile << "  \\end{tabular}\n  "
+                        "$ \\text {Время выхода на стационар }$\n"
+                      "\\end{center}\n"
+                      "\\vfill" << std::endl;
+        }
+    }
 
+
+
+}
 std::ostream & operator << (std::ostream &s, const res &Res)
 {
   s << Res.num << " " << Res.time_st << " "

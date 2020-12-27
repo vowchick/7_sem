@@ -3,7 +3,7 @@
 struct P_gas
 {
     double Segm_T = 1.;
-    double Segm_X = 10.;
+    double Segm_X = 1.;
     double p_gamma;
     double mu;
     void fill (double _gamma, double _mu)
@@ -20,12 +20,14 @@ struct P_she
     int N;
     int Dim;
     double h_x;
+    int K;
     double tau;
-    void fill (int _M, int _N,
+    void fill (int _M, int _N, int _K,
                const P_gas &p_g)
     {
       M_x = _M;
       N = _N;
+      K = _K;
       Dim = _M + 1;
       h_x = p_g.Segm_X / _M;
       tau = p_g.Segm_T / N;

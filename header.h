@@ -3,8 +3,8 @@
 #include <functional>
 #include <vector>
 #include "structs.h"
-double u_0 (double x);
-double rho_0 (double x);
+double u_0 (double x, int K);
+double rho_0 ();
 double rho (double t, double x);
 double u (double t, double x);
 double ddx_rho_u (double t, double x);
@@ -23,7 +23,7 @@ void init_vectors (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr
 double L2_norm (const std::vector<double> &v, double h, int st);
 double W2_1h_norm (const std::vector<double> &v, double h, int st);
 void write_table (const char *name, double residual, const P_she &p_s);
-void write_table_for_tex (const char *name, const res &result, const P_she &p_s);
+void write_table_for_tex (const char *name, const res &result, const P_she &p_s, const P_gas &p_g);
 double m (double h, const std::vector<double> &H);
 double norm_for_second_task (const std::vector <double> &v);
 std::ostream & operator << (std::ostream &s, const res &Res);
