@@ -62,17 +62,18 @@ solve_tridiagonal (std::vector<double> &bottom, std::vector<double> &middle, std
 void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std::vector<double> &curr_H, res &result, int bound, bool first)
 {
   int M = p_s.M_x;
-  const double eps = 1e-3;
+  const int diff = 50;
+  const double eps = 1e-6;
   double tau = p_s.tau, h = p_s.h_x,
       mu = p_g.mu, gamma = p_g.p_gamma;
   std::vector<double> next_V (M + 1), next_H (M),
       bottom (M + 1), middle (M + 1), top (M + 1);
+  std::vector<std::vector<double>> prev_Vs (diff);
   init_vectors (p_g, p_s, curr_V, curr_H);
-  double mm = m (h, curr_H);
   [[maybe_unused]]auto solve_for_v = [M, h, mu, tau, gamma, &top, &bottom, &middle,
-                     &curr_H, &curr_V, &next_V] ()
+                     &curr_H, &curr_V, &next_V, p_s] ()
   {
-      next_V[0] = 0.;
+      next_V[0] = p_s.v_tilde;
       middle[0] = 1.;
       top[0] = 0.;
 
@@ -101,7 +102,7 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
                   / (2. * (gamma - 1.) * h) /*+ tau * f (t, x_v, mu, gamma) * (H_s_) / 2.*/;
             }
         }
-      next_V[M] = 0.;
+      next_V[M] = next_V[M - 1];
       middle[M] = 1.;
       bottom[M] = 0.;
 
@@ -115,9 +116,12 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
     };
 
   [[maybe_unused]]auto solve_for_h = [M, h, tau, &top, &bottom, &middle,
-                     &curr_H, &next_H, &next_V] ()
+                     &curr_H, &next_H, &next_V, &p_s] ()
   {
-    for (int m = 0; m < M; m++)
+      middle[0] = 1.;
+      top[0] = 0.;
+      next_H[0] = p_s.rho_tilde/* + tau * f0 (t, x_h)*/;
+    for (int m = 1; m < M; m++)
       {
         bottom[m] = -tau * (next_V[m] + fabs (next_V[m])) / (2. * h);
         middle[m] = 1. + tau * (next_V[m + 1] + fabs (next_V[m + 1])
@@ -127,7 +131,7 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
       }
     solve_tridiagonal (bottom, middle, top, next_H, M);
     };
-  int i, j = 1, bound2 = bound / 100;
+  int i;
   for (i = 0; (i <= bound || first) ; i++)
     {
       solve_for_v ();
@@ -141,23 +145,24 @@ void Sxema (const P_gas &p_g, const P_she &p_s, std::vector<double> &curr_V, std
 //          next_H[i] = rho (t2, h / 2. + i * h);
 //        }
 
-      [[maybe_unused]]auto x = norm_for_second_task (next_V);
-      if (x < eps && first)
+      if (i >= diff && norm_for_fourth_task (curr_V, prev_Vs[0], eps) && first)
         {
           result.num = i;
+          std::copy (next_V.begin (), next_V.end (), std::back_inserter (result.V));
+          std::copy (next_H.begin (), next_H.end (), std::back_inserter (result.H));
           return;
         }
-      if (i == bound2 && !first)
-        {
-          auto y = m (h, next_H);
-          auto z = dm (mm, y);
-          result.resids.push_back (std::make_pair (z, i * tau));
-          j++;
-          bound2 = j * bound / 100;
-          if (j == 100)
-            bound2 = bound;
-        }
 
+      if (i < diff)
+        {
+          std::copy (next_V.begin (), next_V.end (), std::back_inserter (prev_Vs[i]));
+        }
+      else
+        {
+          for (int j = 1; j < diff; j++)
+            prev_Vs[j - 1] = std::move (prev_Vs[j]);
+          std::copy (next_V.begin (), next_V.end (), std::back_inserter (prev_Vs[diff - 1]));
+        }
       std::swap (curr_V, next_V);
       std::swap (curr_H, next_H);
     }
@@ -194,4 +199,14 @@ double norm_for_second_task (const std::vector <double> &v)
         max = fabs (x);
     }
   return max;
+}
+bool norm_for_fourth_task (const std::vector <double> &v, const std::vector <double> &v_prev, double eps)
+{
+  int size = static_cast<int> (v.size ());
+  for (int i = 0; i < size; i++)
+    {
+      if (fabs (v[i] - v_prev[i]) >= eps)
+        return false;
+    }
+  return true;
 }

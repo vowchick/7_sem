@@ -2,13 +2,13 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-
+#include <cmath>
 #define PRINT(x) std::cout << #x << " = " << x << "\n";
 void read_params (P_gas &p_g, P_she &p_s, char *argv[])
 {
   p_g.fill (atof (argv[1]),
             atof (argv[2]));
-  p_s.fill (atoi (argv[3]), atoi (argv[4]), p_g);
+  p_s.fill (atoi (argv[3]), atoi (argv[4]), atof (argv[5]), atof (argv[6]), p_g);
 }
 
 void P_gas::print_params ()
@@ -40,24 +40,24 @@ void write_table_for_tex (const char *name, const res &result, const P_she &p_s)
 {
   std::ofstream outfile;
   outfile.open(name, std::ios_base::app);
-  if (p_s.M_x == 1000 && p_s.N == 5000)
+  if ((fabs (p_s.v_tilde - 1) < 1e-16) && (fabs (p_s.rho_tilde - 1) < 1e-16))
     {
       outfile << "\\begin{center}\n"
-      << "  \\begin{tabular}{| l | l | l | l | l | }\n"
+      << "  \\begin{tabular}{| l | l | l | l | l |}\n"
       << "    \\hline\n"
-      << "        $\\tau \\times h$ & $N_{0} / 4$ & $N_{0} / 2$ & $3N_{0} / 4$ & $N_{0}$  \\\\ \\hline\n";
+      << "      \\backslashbox{$K$}{$\\mu$} & 1 & 2 & 3 & 4  \\\\ \\hline\n";
     }
-  outfile << "$" << p_s.tau << " \\times " << p_s.h_x << "$ ";
- for (int i = 3; i >= 0; i--)
-   {
-     outfile << "& " << std::scientific << result.resids[i].first << " ";
-   }
- outfile << " \\\\ \\hline\n";
+  if ((fabs (p_s.v_tilde - 1) < 1e-16))
+    outfile << p_s.rho_tilde << " ";
+  std::cout << result.tau << std::endl;
+  outfile << " & " << result.num * result.tau;
+  if ((fabs (p_s.v_tilde - 4) < 1e-16))
+    outfile << " \\\\ \\hline\n";
 
-  if (p_s.M_x == 2000 && p_s.N == 10000)
+  if ((fabs (p_s.v_tilde - 4) < 1e-16) && (fabs (p_s.rho_tilde - 4) < 1e-16))
     {
       outfile << "  \\end{tabular}\n  "
-                    "$ \\text {Нормы скорости при } \\mu=10^{-1}$\n"
+                    "$ \\text {Время выхода на стационар } \\mu=10^{-1}$\n"
                   "\\end{center}\n"
                   "\\vfill" << std::endl;
     }
@@ -69,16 +69,18 @@ std::ostream & operator << (std::ostream &s, const res &Res)
     << "\n";
   return s;
 }
-void write_for_plot (const char *name, const res &result, const P_she &p_s)
+void write_for_plot (const char *name, const res &result, const P_she &p_s, const P_gas &p_g)
 {
   std::ofstream outfile;
   outfile.open(name, std::ios_base::app);
-  outfile << "Tau = " << p_s.tau << "\n"
-          <<"h = "  << p_s.h_x << "\n";
-  for (const auto &r : result.resids)
-    {
-      outfile << r.first << " " << r.second << " ";
-    }
+  outfile << p_s.v_tilde << " " << p_s.rho_tilde << " " << p_g.mu << "\n";
+  int size_v = static_cast<int> (result.V.size ());
+  int size_h = static_cast<int> (result.H.size ());
+  for (int i = size_v - 1; i >= 0; i--)
+    outfile << result.V[i] << " ";
+  outfile << std::endl;
+  for (int i = size_h - 1; i >= 0; i--)
+    outfile << result.H[i] << " ";
   outfile << std::endl;
 }
 //\begin{center}
